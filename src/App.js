@@ -1,23 +1,39 @@
 import React, { useState, useEffect } from 'react'
 import './App.css'
 import InputDePesquisa from './components/InputDePesquisa'
+import Paginacao from './components/Paginacao'
+import qs from 'qs'
 
 const BASE_URL = 'https://kitsu.io/api/edge/'
+const LIMITE = 8
 
 function App () {
   const [text, setText] = useState('')
   const [info, setInfo] = useState({})
+  const [offset, setOffset] = useState(0)
 
   useEffect(() => {
-    if (text) {
-      setInfo({})
-      fetch(`${BASE_URL}anime?filter[text]=${text}&page[limit]=12`)
-        .then((response) => response.json())
-        .then((response) => { setInfo(response) })
+    // setInfo({})
+
+    const query = {
+      page: {
+        limit: LIMITE,
+        offset
+      }
     }
 
-    console.log(text)
-  }, [text])
+    if (text) {
+      query.filter = {
+        text
+      }
+    }
+
+    fetch(`${BASE_URL}anime?${qs.stringify(query)}`)
+      .then((response) => response.json())
+      .then((response) => {
+        setInfo(response)
+      })
+  }, [text, offset])
 
   return (
     <>
@@ -30,8 +46,7 @@ function App () {
         {text && !info.data && (<span>Carregando...</span>)}
       </div>
 
-      <div>
-        {info.data && (
+      {info.data && (
         <ul className="lista-animes">
           {info.data.map((anime) => (
             <li key={anime.id}>
@@ -43,8 +58,16 @@ function App () {
             </li>
           ))}
         </ul>
-        )}
-      </div>
+      )}
+
+      {info.meta && (
+      <Paginacao
+        limite={LIMITE}
+        total={info.meta.count}
+        offset={offset}
+        setOffset={setOffset}
+      />
+      )}
     </>
   )
 }
