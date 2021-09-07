@@ -1,2 +1,3 @@
 # react-listar-animes
 Consumindo api de animes, fazendo pesquisa, listando animes ...
+![alt text](https://github.com/GabrielSantosLemos/react-listar-animes/blob/main/public/img.png?raw=true)
